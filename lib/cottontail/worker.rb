@@ -1,0 +1,45 @@
+require "cottontail/leporine"
+require "cottontail/consumer"
+
+module Cottontail
+  class Worker
+    include Cottontail::Leporine
+
+    attr_accessor :queue, :queue_options, :keys
+
+    def initialize(options={})
+      super(options)
+
+      @consumer = options[:consumer] || Cottontail::Consumer.new
+      @keys = if options.keys.include?(:key)
+                [options[:key]]
+              elsif options.keys.include?(:keys)
+                options[:keys]
+              else
+                raise "Options must include either :key => String or :keys => [String, ...]"
+              end
+      @queue = options[:queue] || _random_queue_name
+      @queue_options = options[:queue_options] || { auto_delete: false, durable: true }
+      puts "Worker configured to use consumer #{@consumer} listening on #{@queue} with options #{@queue_options} for keys #{@keys.join(',')}"
+    end
+
+    def start!
+      @queue = @channel.queue(self.queue, self.queue_options)
+      puts "Worker listening on queue #{@queue}"
+      self.keys.each do |key|
+        @consumer.define_singleton_method :publish, &self.method(:publish)
+        @consumer.define_singleton_method :notify do |event, payload|
+          publish(payload, event)
+        end
+        @queue.bind(@exchange, routing_key: key).subscribe(&@consumer.method(:handle_message))
+        puts "Bound consumer #{@consumer} to routing key #{key}"
+      end
+    end
+
+    private
+
+    def _random_queue_name
+      "leporine-worker.#{SecureRandom.hex}"
+    end
+  end
+end
