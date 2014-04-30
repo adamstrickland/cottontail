@@ -5,7 +5,7 @@ module Cottontail
   class Worker
     include Cottontail::Leporine
 
-    attr_accessor :name, :queue, :queue_options, :keys, :consumer
+    attr_accessor :name, :queue, :queue_options, :keys, :consumer, :subscription_options
 
     def initialize(options={})
       super(options)
@@ -20,19 +20,31 @@ module Cottontail
               end
       @name = options[:queue] || _random_queue_name
       @queue_options = options[:queue_options] || { auto_delete: false, durable: true }
+      @subscription_options = {}
       Cottontail.debug "Worker configured to use consumer #{@consumer} listening on #{@queue} with options #{@queue_options} for keys #{@keys.join(',')}"
     end
 
     def start!
-      @queue = @channel.queue(self.name, self.queue_options)
-      Cottontail.debug "Worker listening on queue #{@queue}"
-
       _decorate_consumer(@consumer)
-
       self.keys.each do |key|
-        @queue.bind(@exchange, routing_key: key).subscribe(&@consumer.method(:handle_message))
-        Cottontail.debug "Bound consumer #{@consumer} to routing key #{key}"
+        self.bind!(key)
+        Cottontail.debug "Bound consumer to routing key #{key}"
       end
+    end
+
+    def queue
+      Cottontail.debug "Worker listening on queue #{@queue}"
+      @queue ||= @channel.queue(self.name, self.queue_options)
+    end
+
+    def bind!(key)
+      self.queue.bind(self.exchange, routing_key: key).subscribe(self.subscription_options) do |di, meta, pyld|
+        self.on_message(di, meta, pyld)
+      end
+    end
+
+    def on_message(delivery_info, metadata, payload)
+      self.consumer.handle_message(delivery_info, metadata, payload)
     end
 
     private
