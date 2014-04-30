@@ -11,11 +11,11 @@ module Cottontail
     end
 
     def on_message(delivery_info, metadata, payload)
-      self.map[meta[:correlation_id]] = (self.map[meta[:correlation_id]] || []) + [pyld]
-      Cottontail.debug "#{meta[:headers]['correlation_count'].to_i} / #{self.map[meta[:correlation_id]].size} messages for #{meta[:correlation_id]} found"
-      if self.map[meta[:correlation_id]].size == meta[:headers]['correlation_count'].to_i
-        self.consumer.handle_message(di, meta, pyld)
-        self.map.delete(meta[:correlation_id])
+      self.map[metadata[:correlation_id]] = (self.mapdata[meta[:correlation_id]] || []) + [payload]
+      Cottontail.debug "#{metadata[:headers]['correlation_count'].to_i} / #{self.map[metadata[:correlation_id]].size} messages for #{metadata[:correlation_id]} found"
+      if self.map[metadata[:correlation_id]].size == metadata[:headers]['correlation_count'].to_i
+        self.consumer.handle_message(delivery_info, metadata, payload)
+        self.map.delete(metadata[:correlation_id])
       end
     end
   end
