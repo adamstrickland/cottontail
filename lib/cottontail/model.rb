@@ -1,9 +1,9 @@
+require 'verbs'
+
 module Cottontail
   module Model
     def self.included(base)
-      base.after_create :notify_created
-      base.after_update :notify_updated
-      base.after_destroy :notify_destroyed
+      base.send(:extend, Macros)
     end
 
     def notify_created
@@ -18,18 +18,41 @@ module Cottontail
       notify_event(:destroyed)
     end
 
+    def identifier
+      self.object_id.to_s
+    end
+
+    def key_base
+      self.class.to_s.downcase
+    end
+
     def notify_event(event)
-      # Cottontail.debug "#{self.class.to_s} #{event.to_s.capitalize}!"
-      # connection = Bunny.new
-      # connection.start
-      # channel = connection.create_channel
-      # _type = self.class.to_s.downcase
-      # key = "#{_type}.#{event.to_s}"
-      # exchange = channel.topic("events", auto_delete: false, durable: true)
-      # payload = { "#{_type}_id" => self._id }
-      # Cottontail.debug "Publishing #{payload} on 'events' keyed to #{key}"
-      # exchange.publish(payload.to_json, {persistent: true, routing_key: key})
-      # connection.close
+      Cottontail.debug "#{self.class.to_s} #{event.to_s.capitalize}!"
+      key = "#{self.key_base}.#{event.to_s}"
+      payload = { identifier: self.identifier }
+      Cottontail.debug "Publishing #{payload} on 'events' keyed to #{key}"
+      Cottontail.publish(payload, key)
+    end
+
+    module Macros
+      def notify_on_all
+        notify_on :after_create, :after_update, :after_destroy
+      end
+
+      def notify_on(*events)
+        options = { tense: :past, aspect: :perfective, person: :third }
+        callbacks = events.map do |e| 
+          occurrence = e.to_s.gsub(/after_/, '').verb.conjugate(options)
+          "notify_#{occurrence}".to_sym
+        end
+        notify_using Hash[*events.zip(callbacks).flatten]
+      end
+
+      def notify_using(map)
+        map.each do |event, callback|
+          self.send(event, callback)
+        end
+      end
     end
   end
 end

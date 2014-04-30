@@ -5,14 +5,17 @@ Dir.glob(File.join(File.dirname(__FILE__), '../lib/**/*.rb'), &method(:require))
 
 ENV['RACK_ENV'] = 'test'
 
-RSpec.configure do |config|
-  # config.include RSpecMixin
+class NullLogger < Logger
+  def initialize(*args); end
+  def add(*args, &block); end
+end
 
+RSpec.configure do |config|
   config.before :each do
-    # DatabaseCleaner.strategy = :truncation
+    # comment this out for talky output
+    Cottontail.configuration.logger = NullLogger.new
   end
 
   config.after :each do
-    # DatabaseCleaner.clean
   end
 end
