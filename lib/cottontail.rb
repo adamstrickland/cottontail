@@ -8,7 +8,7 @@ require "cottontail/worker"
 
 module Cottontail
   class Configuration
-    attr_accessor :user, :password, :host, :port, :vhost
+    attr_accessor :user, :password, :host, :port, :vhost, :logger
     attr_reader :scheme
 
     def initialize
@@ -18,6 +18,7 @@ module Cottontail
       self.port = 5672
       self.vhost = "%2f"
       @scheme = "amqp"
+      self.logger = Logger.new(STDOUT)
     end
 
     def url=(url)
@@ -44,5 +45,21 @@ module Cottontail
 
   def self.publish(payload, key, options={})
     Producer.new.publish(payload, key, options)
+  end
+
+  def self.logger
+    self.configuration.logger
+  end
+
+  def self.info(message)
+    self.configuration.logger.info(message)
+  end
+
+  def self.debug(message)
+    self.configuration.logger.debug(message)
+  end
+
+  def self.error!(message)
+    self.configuration.logger.error(message)
   end
 end

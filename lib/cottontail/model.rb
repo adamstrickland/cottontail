@@ -19,7 +19,7 @@ module Cottontail
     end
 
     def notify_event(event)
-      # puts "#{self.class.to_s} #{event.to_s.capitalize}!"
+      # Cottontail.debug "#{self.class.to_s} #{event.to_s.capitalize}!"
       # connection = Bunny.new
       # connection.start
       # channel = connection.create_channel
@@ -27,7 +27,7 @@ module Cottontail
       # key = "#{_type}.#{event.to_s}"
       # exchange = channel.topic("events", auto_delete: false, durable: true)
       # payload = { "#{_type}_id" => self._id }
-      # puts "Publishing #{payload} on 'events' keyed to #{key}"
+      # Cottontail.debug "Publishing #{payload} on 'events' keyed to #{key}"
       # exchange.publish(payload.to_json, {persistent: true, routing_key: key})
       # connection.close
     end

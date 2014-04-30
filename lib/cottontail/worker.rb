@@ -5,7 +5,7 @@ module Cottontail
   class Worker
     include Cottontail::Leporine
 
-    attr_accessor :queue, :queue_options, :keys
+    attr_accessor :name, :queue, :queue_options, :keys, :consumer
 
     def initialize(options={})
       super(options)
@@ -18,28 +18,28 @@ module Cottontail
               else
                 raise "Options must include either :key => String or :keys => [String, ...]"
               end
-      @queue = options[:queue] || _random_queue_name
+      @name = options[:queue] || _random_queue_name
       @queue_options = options[:queue_options] || { auto_delete: false, durable: true }
-      puts "Worker configured to use consumer #{@consumer} listening on #{@queue} with options #{@queue_options} for keys #{@keys.join(',')}"
+      Cottontail.debug "Worker configured to use consumer #{@consumer} listening on #{@queue} with options #{@queue_options} for keys #{@keys.join(',')}"
     end
 
     def start!
-      @queue = @channel.queue(self.queue, self.queue_options)
-      puts "Worker listening on queue #{@queue}"
+      @queue = @channel.queue(self.name, self.queue_options)
+      Cottontail.debug "Worker listening on queue #{@queue}"
       self.keys.each do |key|
         @consumer.define_singleton_method :publish, &self.method(:publish)
         @consumer.define_singleton_method :notify do |event, payload|
           publish(payload, event)
         end
         @queue.bind(@exchange, routing_key: key).subscribe(&@consumer.method(:handle_message))
-        puts "Bound consumer #{@consumer} to routing key #{key}"
+        Cottontail.debug "Bound consumer #{@consumer} to routing key #{key}"
       end
     end
 
     private
 
     def _random_queue_name
-      "leporine-worker.#{SecureRandom.hex}"
+      "cottontail-worker.#{SecureRandom.hex}"
     end
   end
 end
