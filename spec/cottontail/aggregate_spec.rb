@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe Cottontail::Worker do
+describe Cottontail::Aggregator do
   it_should_behave_like "a good little worker"
 end

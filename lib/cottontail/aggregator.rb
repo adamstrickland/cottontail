@@ -11,7 +11,7 @@ module Cottontail
     end
 
     def on_message(delivery_info, metadata, payload)
-      self.map[metadata[:correlation_id]] = (self.mapdata[meta[:correlation_id]] || []) + [payload]
+      self.map[metadata[:correlation_id]] = (self.map[metadata[:correlation_id]] || []) + [payload]
       Cottontail.debug "#{metadata[:headers]['correlation_count'].to_i} / #{self.map[metadata[:correlation_id]].size} messages for #{metadata[:correlation_id]} found"
       if self.map[metadata[:correlation_id]].size == metadata[:headers]['correlation_count'].to_i
         self.consumer.handle_message(delivery_info, metadata, payload)
