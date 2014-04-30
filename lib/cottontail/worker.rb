@@ -26,17 +26,23 @@ module Cottontail
     def start!
       @queue = @channel.queue(self.name, self.queue_options)
       Cottontail.debug "Worker listening on queue #{@queue}"
+
+      _decorate_consumer(@consumer)
+
       self.keys.each do |key|
-        @consumer.define_singleton_method :publish, &self.method(:publish)
-        @consumer.define_singleton_method :notify do |event, payload|
-          publish(payload, event)
-        end
         @queue.bind(@exchange, routing_key: key).subscribe(&@consumer.method(:handle_message))
         Cottontail.debug "Bound consumer #{@consumer} to routing key #{key}"
       end
     end
 
     private
+
+    def _decorate_consumer(consumer)
+      consumer.define_singleton_method :publish, &self.method(:publish)
+      consumer.define_singleton_method :notify do |event, payload|
+        publish(payload, event)
+      end
+    end
 
     def _random_queue_name
       "cottontail-worker.#{SecureRandom.hex}"

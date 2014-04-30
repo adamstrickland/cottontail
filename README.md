@@ -35,8 +35,8 @@ Configure a connection to your RabbitMQ server.  In a Rails application this mig
   ```ruby
     Cottontail.configure do |c|
       c.host = "rabbitsareverywhere.com"  # I should prolly just buy that domain right now...
-      c.user = "bugs"
-      c.password = "bUnNy"
+      c.user = "bugsbunny"
+      c.password = "3$qU1re"
       c.vhost = "%2fwhat_is_up_doc"
     end
   ```
