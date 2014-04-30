@@ -25,8 +25,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-nav"
   spec.add_development_dependency "guard-rspec"
-  spec.add_development_dependency "activesupport"
-  spec.add_development_dependency "verbs"
 
+  spec.add_dependency "verbs"
   spec.add_dependency "bunny"
+  spec.add_dependency "activesupport"
 end
