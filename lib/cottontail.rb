@@ -10,7 +10,7 @@ module Cottontail
   DEFAULT_TOPIC = "topic"
 
   class Configuration
-    attr_accessor :user, :password, :host, :port, :vhost, :logger, :topic
+    attr_accessor :user, :password, :host, :port, :vhost, :logger, :topic, :verbose
     attr_reader :scheme
 
     def initialize
@@ -22,6 +22,7 @@ module Cottontail
       @scheme = "amqp"
       self.logger = Logger.new(STDOUT)
       self.topic = DEFAULT_TOPIC
+      self.verbose = false
     end
 
     def url=(url)
@@ -54,15 +55,24 @@ module Cottontail
     self.configuration.logger
   end
 
+  def self.verbose?
+    self.configuration.verbose
+  end
+
   def self.info(message)
-    self.configuration.logger.info(message)
+    self.configuration.logger.info(message) if self.verbose?
   end
 
   def self.debug(message)
-    self.configuration.logger.debug(message)
+    self.configuration.logger.debug(message) if self.verbose?
   end
 
-  def self.error!(message)
+  def self.warn(message)
+    self.configuration.logger.warn(message)
+  end
+
+  def self.error(message)
     self.configuration.logger.error(message)
   end
+  alias_method :error, :error!
 end
