@@ -13,7 +13,7 @@ module Cottontail
     end
 
     def handle_channel_exception(channel, channel_close)
-      Cottontail.error! "Oops... a channel-level exception occurred: code => #{channel_close.reply_code}, message => '#{channel_close.reply_text}'"
+      Cottontail.error "Oops... a channel-level exception occurred: code => #{channel_close.reply_code}, message => '#{channel_close.reply_text}'"
     end
 
     def publish(message, key, options={})

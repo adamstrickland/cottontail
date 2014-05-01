@@ -74,5 +74,4 @@ module Cottontail
   def self.error(message)
     self.configuration.logger.error(message)
   end
-  alias_method :error, :error!
 end
