@@ -80,9 +80,29 @@ Configure a connection to your RabbitMQ server.  In a Rails application this mig
 
 There are a couple of things yet to do.  Among them:
 
-- [] Implement the [Aggregator pattern](http://www.eaipatterns.com/Aggregator.html)
+- [X] Implement the [Aggregator pattern](http://www.eaipatterns.com/Aggregator.html)
 - [] Gracefully handle development where subscribers don't exist
 - [] Connection cleanup (necessary?)
+- [] A topology DSL, something along the lines of:
+
+  ```ruby
+  Cottontail.topology do 
+    work("foo")
+      .consumed_by(FooConsumer)
+      .consumed_by(AnotherFooConsumer)
+
+    work("bar")
+      .consumed_by(BarConsumer)
+
+    work("baz", topic: "some_other_topic")
+      .consumed_by(BazConsumer)
+
+    aggregate("foo", "bar")
+      .consumed_by(FooBarConsumer)
+  end.start!
+  ```
+
+- [] A command line executable for viewing a topology, sending messages to a topology, etc.
 
 ## Contributing
 

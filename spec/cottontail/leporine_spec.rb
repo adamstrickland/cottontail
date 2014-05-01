@@ -23,7 +23,7 @@ describe Cottontail::Leporine do
 
         context 'and the exchange' do
           subject { action!.exchange }
-          its(:name) { should eq Cottontail::Leporine::DEFAULT_EXCHANGE }
+          its(:name) { should eq Cottontail::DEFAULT_TOPIC }
           its(:type) { should eq :topic }
         end
       end

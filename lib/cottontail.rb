@@ -7,8 +7,10 @@ require "cottontail/producer"
 require "cottontail/worker"
 
 module Cottontail
+  DEFAULT_TOPIC = "topic"
+
   class Configuration
-    attr_accessor :user, :password, :host, :port, :vhost, :logger
+    attr_accessor :user, :password, :host, :port, :vhost, :logger, :topic
     attr_reader :scheme
 
     def initialize
@@ -19,6 +21,7 @@ module Cottontail
       self.vhost = "%2f"
       @scheme = "amqp"
       self.logger = Logger.new(STDOUT)
+      self.topic = DEFAULT_TOPIC
     end
 
     def url=(url)

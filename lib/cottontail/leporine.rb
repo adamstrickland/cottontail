@@ -4,12 +4,10 @@ module Cottontail
   module Leporine
     attr_accessor :channel, :connection, :exchange
 
-    DEFAULT_EXCHANGE = "topic"
-
     def initialize(options={})
       @connection = options[:connection] || _create_connection
       @channel = options[:channel] || _create_channel
-      @exchange = @channel.topic(options[:exchange] || DEFAULT_EXCHANGE, { auto_delete: false, durable: true }.merge(options[:exchange_options] || {}))
+      @exchange = @channel.topic(options[:exchange] || Cottontail.configuration.topic, { auto_delete: false, durable: true }.merge(options[:exchange_options] || {}))
 
       @channel.on_error(&method(:handle_channel_exception))
     end

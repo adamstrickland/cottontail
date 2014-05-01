@@ -46,6 +46,8 @@ describe Cottontail::Configuration do
     it { should respond_to :vhost }
     it { should respond_to :vhost= }
     it { should respond_to :scheme }
+    it { should respond_to :topic }
+    it { should respond_to :topic= }
     it { should respond_to :url }
     it { should respond_to :url= }
 
@@ -57,6 +59,7 @@ describe Cottontail::Configuration do
       its(:vhost) { should eq "%2f" }
       its(:scheme) { should eq "amqp" }
       its(:url) { should eq "amqp://guest:guest@localhost:5672/%2f" }
+      its(:topic) { should eq Cottontail::DEFAULT_TOPIC }
     end
 
     describe 'when setting the url' do
