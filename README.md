@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/wearemolecule/cottontail.png?branch=master)](https://travis-ci.org/wearemolecule/cottontail)
+[![Code Climate](https://codeclimate.com/github/wearemolecule/cottontail.png)](https://codeclimate.com/github/wearemolecule/cottontail)
+
 # Cottontail
 
 Cottontail is a fluffy RabbitMQ library built on top of [Bunny](https://github.com/ruby-amqp/bunny).  As easy as Bunny is to use, we wanted to consolidate down to our primary usage pattern, that being Pub/Sub.
