@@ -24,6 +24,23 @@ describe Cottontail do
 
       it { should be_true }
     end
+
+    describe 'creates a worker using ::subscribe' do
+      subject { klass.subscribe(key, handler) }
+
+      let(:key) { "foo.bar" }
+      let(:handler) { ::Cottontail::Consumer }
+
+      before do
+        consumer = double
+        worker = double
+        handler.should_receive(:new){ consumer }
+        ::Cottontail::Worker.should_receive(:new).with(hash_including(key: key, consumer: consumer)){ worker }
+        worker.should_receive(:start!){ true }
+      end
+
+      it { should be_true }
+    end
   end
 end
 

@@ -39,6 +39,10 @@ module Cottontail
     end
   end
 
+  def self.subscribe(key, handler)
+    ::Cottontail::Worker.new(key: key, consumer: handler.new).start!
+  end
+
   def self.configure
     yield(self.configuration) if block_given?
   end
