@@ -26,6 +26,7 @@ module Cottontail
 
     def _create_connection
       _url = Cottontail.configuration.url
+      Cottontail.info "Connecting to RabbitMQ at #{_url}"
       connection = Bunny.new(_url)
       connection.start
       connection
