@@ -5,4 +5,6 @@ require 'spec_helper'
 #
 describe 'Aggregator Pattern' do
 
+  it { true.should be_truthy }
+
 end

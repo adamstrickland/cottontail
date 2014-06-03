@@ -33,7 +33,7 @@ describe Cottontail::Model do
 
     before { Cottontail.should_receive(:publish).with(hash_including(identifier: instance.identifier), %r{#{event}}).and_return(true) }
 
-    it { should be_true }
+    it { should be_truthy }
   end
 
   describe "macros" do

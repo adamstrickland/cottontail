@@ -1,5 +1,7 @@
 require 'pry'
 require 'database_cleaner'
+require 'rspec/its'
+require 'rspec/collection_matchers'
 Dir.glob(File.join(__dir__, 'support/**/*.rb'), &method(:require))
 Dir.glob(File.join(File.dirname(__FILE__), '../lib/**/*.rb'), &method(:require))
 

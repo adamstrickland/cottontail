@@ -39,8 +39,8 @@ module Cottontail
     end
   end
 
-  def self.subscribe(key, handler)
-    ::Cottontail::Worker.new(key: key, consumer: handler.new).start!
+  def self.subscribe(key, handler, options = {})
+    ::Cottontail::Worker.new({key: key, consumer: handler.new}.merge(options)).start!
   end
 
   def self.configure

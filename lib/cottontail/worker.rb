@@ -51,7 +51,7 @@ module Cottontail
 
     def _decorate_consumer(consumer)
       consumer.define_singleton_method :publish, &self.method(:publish)
-      consumer.define_singleton_method :notify do |event, payload, options={}|
+      consumer.define_singleton_method :notify do |payload, event, options={}|
         publish(payload, event, options)
       end
     end
