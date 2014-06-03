@@ -20,7 +20,7 @@ module Cottontail
       self.port = 5672
       self.vhost = "%2f"
       @scheme = "amqp"
-      self.logger = Logger.new(STDOUT)
+      self.logger = Logger.new($stdout)
       self.topic = DEFAULT_TOPIC
       self.verbose = false
     end
