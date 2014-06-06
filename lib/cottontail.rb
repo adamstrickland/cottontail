@@ -40,7 +40,7 @@ module Cottontail
   end
 
   def self.subscribe(key, handler, options = {})
-    ::Cottontail::Worker.new({key: key, consumer: handler.new}.merge(options)).start!
+    ::Cottontail::Worker.new({name: key, key: key, consumer: handler.new}.merge(options)).start!
   end
 
   def self.configure
