@@ -39,8 +39,35 @@ module Cottontail
     end
   end
 
-  def self.subscribe(key, handler, options = {})
-    ::Cottontail::Worker.new({queue: key, key: key, consumer: handler.new}.merge(options)).start!
+  def self.subscribe(key, *args, &block)
+    argc = args.size
+    raise ArgumentError, "wrong number of arguments (#{argc+1} for 1..3)" if argc > 2
+
+    if block_given?
+      _subscribe_with_block(key, *args, &block)
+    else
+      _subscribe_with_class(key, *args)
+    end
+  end
+
+  def self._subscribe_with_class(key, handler, options={})
+    raise ArgumentError, "wrong number of arguments (block required OR supplied as 2nd argument)" if handler.nil?
+    raise ArgumentError, "invalid options" unless options.kind_of?(Hash)
+
+    consumer = handler.new
+
+    binding.pry unless consumer.respond_to?(:handle_message)
+
+    %i(handle_message handle_payload).each do |m|
+      raise ArgumentError, "invalid handler; must implement :#{m}" unless consumer.respond_to?(m)
+    end
+
+    ::Cottontail::Worker.new({queue: key, key: key, consumer: consumer}.merge(options)).start!
+  end
+
+  def self._subscribe_with_block(key, options={}, &block)
+    handler = self.handlerify(&block)
+    _subscribe_with_class(key, handler, options)
   end
 
   def self.configure
@@ -77,5 +104,13 @@ module Cottontail
 
   def self.error(message)
     self.configuration.logger.error(message)
+  end
+
+  def self.handlerify(&block)
+    raise "A block is required" unless block_given?
+
+    Class.new(Consumer) do
+      define_method(:handle_message, &block)
+    end
   end
 end

@@ -23,20 +23,36 @@ describe Cottontail do
   end
 
   describe 'creates a worker using ::subscribe' do
-    subject { klass.subscribe(key, handler) }
-
     let(:key) { "foo.bar" }
-    let(:handler) { ::Cottontail::Consumer }
 
     before do
-      consumer = double
       worker = double
-      expect(handler).to receive(:new){ consumer }
-      expect(::Cottontail::Worker).to receive(:new).with(hash_including(key: key, consumer: consumer)){ worker }
+      expect(::Cottontail::Worker).to receive(:new).with(hash_including(key: key, consumer: kind_of(::Cottontail::Consumer))){ worker }
       expect(worker).to receive(:start!){ true }
     end
 
-    it { should be_truthy }
+    context 'when the supplied handler is a class' do
+      class TestConsumer < ::Cottontail::Consumer
+        def handle_message(di, m, p); end
+      end
+
+      it "should start the worker" do
+        expect( klass.subscribe(key, TestConsumer) ).to be_truthy
+      end
+    end
+
+    context 'when the supplied handler is a block' do
+      it "should start the worker" do
+        expect( klass.subscribe(key) { |_,_,_| nil } ).to be_truthy
+      end
+    end
+  end
+
+  describe 'creates a handler using ::consumer' do
+    subject { klass.handlerify{ |_,_,_| nil } }
+    it { expect(subject).to be_a Class }
+    it { expect(subject.new).to respond_to :handle_message } # defined in method
+    it { expect(subject.new).to respond_to :handle_payload } # from Consumable
   end
 end
 
