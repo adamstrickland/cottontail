@@ -4,6 +4,5 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem "fuubar"
-  gem "rspec-legacy_formatters"
+  # gem "fuubar"
 end
