@@ -7,7 +7,7 @@ module Cottontail
     def initialize(options={})
       super(options)
       @map = {}
-      @subscription_options = { ack: true, block: false }
+      @subscription_options = { manual_ack: true, block: false }
     end
 
     def on_message(delivery_info, metadata, payload)

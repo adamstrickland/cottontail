@@ -31,7 +31,9 @@ describe Cottontail::Model do
 
     let(:event) { "created" }
 
-    before { Cottontail.should_receive(:publish).with(hash_including(identifier: instance.identifier), %r{#{event}}).and_return(true) }
+    before do
+      expect(Cottontail).to receive(:publish).with(hash_including(identifier: instance.identifier), %r{#{event}}).and_return(true)
+    end
 
     it { should be_truthy }
   end
@@ -63,9 +65,9 @@ describe Cottontail::Model do
     describe 'notify_on_all activates all of the callbacks' do
       subject { klass.notify_on_all }
       before do
-        klass.should_receive(:after_create).with(:notify_created)
-        klass.should_receive(:after_update).with(:notify_updated)
-        klass.should_receive(:after_destroy).with(:notify_destroyed)
+        expect(klass).to receive(:after_create).with(:notify_created)
+        expect(klass).to receive(:after_update).with(:notify_updated)
+        expect(klass).to receive(:after_destroy).with(:notify_destroyed)
       end
       it { should be_a Hash }
     end
@@ -73,8 +75,8 @@ describe Cottontail::Model do
     describe 'notify_on activates callbacks for the supplied events' do
       subject { klass.notify_on :when_complete, :after_sleep }
       before do
-        klass.should_receive(:when_complete).with(:notify_when_completed)
-        klass.should_receive(:after_sleep).with(:notify_slept)
+        expect(klass).to receive(:when_complete).with(:notify_when_completed)
+        expect(klass).to receive(:after_sleep).with(:notify_slept)
       end
       it { should be_a Hash }
     end
@@ -83,7 +85,7 @@ describe Cottontail::Model do
       subject { klass.notify_using(map) }
       let(:map) { { ask_yourself: :is_this_my_beautiful_life } }
       before do
-        klass.should_receive(:ask_yourself).with(:is_this_my_beautiful_life)
+        expect(klass).to receive(:ask_yourself).with(:is_this_my_beautiful_life)
       end
       it { should be_a Hash }
     end

@@ -7,7 +7,7 @@ shared_examples_for "a good little worker" do
   let(:instance) { instantiate! }
 
   subject { instance }
-  
+
   it { should respond_to :start! }
 
   describe 'when initialized' do
@@ -40,7 +40,7 @@ shared_examples_for "a good little worker" do
 
     describe 'a queue is created' do
       let(:queue) { double(bind: double(subscribe:nil)) }
-      before { instance.channel.should_receive(:queue).with(kind_of(String), kind_of(Hash)).and_return(queue) }
+      before { expect(instance.channel).to receive(:queue).with(kind_of(String), kind_of(Hash)).and_return(queue) }
       it { should eq [key] }
     end
 
@@ -48,9 +48,9 @@ shared_examples_for "a good little worker" do
       let(:bound_queue) { double }
       let(:queue) { double }
       before do
-        instance.channel.stub(:queue).once.and_return(queue)
-        queue.should_receive(:bind).with(instance.exchange, hash_including(routing_key: key)).and_return(bound_queue)
-        bound_queue.should_receive(:subscribe)
+        allow(instance.channel).to receive(:queue).once.and_return(queue)
+        expect(queue).to receive(:bind).with(instance.exchange, hash_including(routing_key: key)).and_return(bound_queue)
+        expect(bound_queue).to receive(:subscribe)
       end
       it { should eq [key] }
     end

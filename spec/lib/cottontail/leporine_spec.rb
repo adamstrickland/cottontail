@@ -44,7 +44,7 @@ describe Cottontail::Leporine do
 
     subject { klass.new(options).publish(message, key) }
 
-    before { exchange.should_receive(:publish).with(kind_of(String), hash_including(persistent: true, routing_key: key)).and_return(true) }
+    before { expect(exchange).to receive(:publish).with(kind_of(String), hash_including(persistent: true, routing_key: key)).and_return(true) }
 
     it { should be_truthy }
   end

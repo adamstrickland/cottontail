@@ -13,9 +13,17 @@ class NullLogger < Logger
 end
 
 RSpec.configure do |config|
+  config.expect_with :rspec do |c|
+    c.syntax = [:should, :expect]
+  end
+
   config.before :each do
-    # comment this out for talky output
-    Cottontail.configuration.logger = NullLogger.new
+    Cottontail.configure do |c|
+      c.url = ENV['AMQP_URL'] if ENV['AMQP_URL'].present?
+
+      # comment this out for talky output
+      c.logger = NullLogger.new
+    end
   end
 
   config.after :each do

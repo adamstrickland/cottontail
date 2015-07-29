@@ -15,8 +15,8 @@ describe Cottontail do
 
     before do
       producer = double
-      Cottontail::Producer.stub(:new).and_return(producer)
-      producer.should_receive(:publish).with(payload, key, kind_of(Hash)).and_return(true)
+      expect(Cottontail::Producer).to receive(:new).and_return(producer)
+      expect(producer).to receive(:publish).with(payload, key, kind_of(Hash)).and_return(true)
     end
 
     it { should be_truthy }
@@ -31,9 +31,9 @@ describe Cottontail do
     before do
       consumer = double
       worker = double
-      handler.should_receive(:new){ consumer }
-      ::Cottontail::Worker.should_receive(:new).with(hash_including(key: key, consumer: consumer)){ worker }
-      worker.should_receive(:start!){ true }
+      expect(handler).to receive(:new){ consumer }
+      expect(::Cottontail::Worker).to receive(:new).with(hash_including(key: key, consumer: consumer)){ worker }
+      expect(worker).to receive(:start!){ true }
     end
 
     it { should be_truthy }
